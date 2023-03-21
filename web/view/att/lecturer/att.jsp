@@ -12,6 +12,9 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <form action="logout" method="POST">
+            <button type="submit">Log Out</button>
+        </form>
         <form action="takeattend" method="POST">
             <table border="1px">
                 <tr>
@@ -45,7 +48,9 @@
                 </c:forEach>
             </table>
             <input type="hidden" name="sessionid" value="${param.id}"/>
-            <input type="submit" value="Save"/>
+            <input type="submit" value="Save"/>            
         </form>
+            <a href="timetable?lid=${sessionScope.account.person_id}"><button>Go back</button></a>
+
     </body>
 </html>

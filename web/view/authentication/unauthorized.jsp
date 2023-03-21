@@ -1,20 +1,20 @@
 <%-- 
-    Document   : logout
-    Created on : Mar 20, 2023, 1:44:01 PM
+    Document   : unauthorized
+    Created on : Mar 21, 2023, 3:57:03 AM
     Author     : ACER
 --%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Log Out Page</title>
+        <title>JSP Page</title>
     </head>
     <body>
-        <h1>Logout successful!</h1>
+        <h1>You are unauthorized to access this page.</h1>
         <br/>
-        You will be directed to Log In Page after <span id="time"></span> seconds
+        You will be redirected to Home Page after <span id="time"></span> seconds
         <script> 
         var count =3;
         var time = document.getElementById('time');
@@ -25,7 +25,7 @@
             time.innerHTML = count;
             if(count <= 0 )
             {
-                window.location.href = 'login';
+                window.location.href = '../home';
             }
         }
         setInterval(counting,1000);       

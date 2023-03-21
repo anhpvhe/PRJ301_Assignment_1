@@ -43,6 +43,14 @@ public class Account {
     public void setPerson_id(String person_id) {
         this.person_id = person_id;
     }
+
+    public ArrayList<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(ArrayList<Permission> permissions) {
+        this.permissions = permissions;
+    }
     
     
     

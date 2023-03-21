@@ -4,6 +4,9 @@
  */
 package util;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -50,4 +53,33 @@ public class DateTimeHelper {
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
     }
+    
+    public static String getCurrentDate() {
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = currentDate.format(formatter);
+        return formattedDate;
+    }
+    
+    public static String getFirstDayOfWeek(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dateString, formatter);
+        LocalDate firstDayOfWeek = date.with(DayOfWeek.MONDAY);
+        return firstDayOfWeek.format(formatter);
+    }
+    
+    public static String getLastDayOfWeek(String dateString) { //any day in the week
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dateString, formatter);
+        LocalDate lastDayOfWeek = date.with(DayOfWeek.SUNDAY);
+        return lastDayOfWeek.format(formatter);
+    }
+    
+//    public static String getLastDayOfWeek(String dateString) { //input Monday here
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//        LocalDate date = LocalDate.parse(dateString, formatter);
+//        LocalDate lastDayOfWeek = date.with(DayOfWeek.SUNDAY).plusDays(6);
+//        return lastDayOfWeek.format(formatter);
+//    }
+    
 }

@@ -26,6 +26,102 @@ import model.TimeSlot;
  */
 public class StudentDBContext extends DBContext<Student> {
 
+    public int countStudentInGroup(int gid) {
+        int count = 0;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            String sql = "select g.gid, g.gname, g.cid, count(s.sid) as countStudent\n"
+                    + "	from Student s join Student_Group sg on s.sid = sg.sid\n"
+                    + "	join [Group] g on g.gid = sg.gid\n"
+                    + "	where g.gid = ?\n"
+                    + "	group by g.gid, g.gname, g.cid";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, gid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("countStudent");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+                stm.close();
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return count;
+    }
+
+    public ArrayList<Student> getStudentsFromGroup(int gid) {
+        ArrayList<Student> students = new ArrayList<>();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            String sql = "select g.gid, g.gname, g.cid, s.sid, s.sname\n"
+                    + "	from Student s join Student_Group sg on s.sid = sg.sid\n"
+                    + "	join [Group] g on g.gid = sg.gid\n"
+                    + "	where g.gid = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, gid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                Student student = new Student();
+                student.setId(rs.getString("sid"));
+                student.setName(rs.getString("sname"));
+                students.add(student);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+                stm.close();
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return students;
+    }
+
+    public ArrayList<Student> getStudentsFromSession(int sessionid) {
+        ArrayList<Student> students = new ArrayList<>();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            String sql = "select ses.sessionid, g.gid, g.gname, g.cid, s.sid, s.sname\n"
+                    + "	from Student s \n"
+                    + "				join Student_Group sg on s.sid = sg.sid\n"
+                    + "				join [Group] g on g.gid = sg.gid\n"
+                    + "				join [Session] ses on g.gid = ses.gid\n"
+                    + "	where ses.sessionid = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, sessionid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                Student student = new Student();
+                student.setId(rs.getString("sid"));
+                student.setName(rs.getString("sname"));
+                students.add(student);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+                stm.close();
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return students;
+    }
+
     public Student getTimeTable(String sid, Date from, Date to) {
         Student student = null;
         PreparedStatement stm = null;

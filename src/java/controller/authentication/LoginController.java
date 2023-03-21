@@ -10,8 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import static java.lang.System.out;
+import java.util.ArrayList;
 import model.Account;
+import model.permission.Permission;
 
 /**
  *
@@ -27,7 +28,9 @@ public class LoginController extends HttpServlet{
         AccountDBContext db = new AccountDBContext();
         Account account = db.get(username, password);
         if(account != null)
-        {
+        {           
+            ArrayList<Permission> permissions = account.getPermissions();
+            request.getSession().setAttribute("permissions", permissions);
             request.getSession().setAttribute("account", account);
 //            response.getWriter().println("login successful!");
         request.getRequestDispatcher("view/authentication/login_success.jsp").forward(request, response);

@@ -13,36 +13,43 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <form action="logout" method="POST">
+            <button type="submit">Log Out</button>
+        </form>
+        <h2>Timetable for ${sessionScope.account.person_id} </h2> 
         <table border="1px">
             <tr>
                 <td></td>
-            <c:forEach items="${requestScope.dates}" var="d">
+                <c:forEach items="${requestScope.dates}" var="d">
                     <td>${d} <br/>
-                    <fmt:formatDate value="${d}" pattern="EEEE" />
+                <fmt:formatDate value="${d}" pattern="EEEE" />
 
+            </td>
+        </c:forEach>
+        <tr/>
+        <c:forEach items="${requestScope.slots}" var="s">
+            <tr>
+                <td>${s.description}</td>
+                <c:forEach items="${requestScope.dates}" var="d">
+                    <td>
+                        <c:forEach items="${requestScope.sessions}" var="ses">
+                            <c:if test="${ses.slot.id eq s.id and ses.date eq d}">
+                                ${ses.group.name}-${ses.group.course.name} <br/>
+                                ${ses.room.name} 
+                                -
+                                <c:if test="${ses.status}">-
+                                    <a href="takeattend?id=${ses.id}">(attended)</a>
+                                </c:if>
+                                    <a href="takeattend?id=${ses.id}"></a>
+                                <c:if test="${!ses.status}">-
+                                    <a href="takeattend?id=${ses.id}">take attend</a>
+                                </c:if>
+                            </c:if>
+                        </c:forEach>
                     </td>
                 </c:forEach>
-            <tr/>
-            <c:forEach items="${requestScope.slots}" var="s">
-                <tr>
-                    <td>${s.description}</td>
-                    <c:forEach items="${requestScope.dates}" var="d">
-                        <td>
-                            <c:forEach items="${requestScope.sessions}" var="ses">
-                                <c:if test="${ses.slot.id eq s.id and ses.date eq d}">
-                                    ${ses.group.name}-${ses.group.course.name} <br/>
-                                    ${ses.room.name} 
-                                    -
-                                    <c:if test="${ses.status}">-(attended)</c:if>
-                                    <c:if test="${!ses.status}">-
-                                        <a href="takeattend?id=${ses.id}">take attend</a>
-                                    </c:if>
-                                </c:if>
-                            </c:forEach>
-                        </td>
-                    </c:forEach>
-                <tr/> 
-            </c:forEach>
-        </table>
-    </body>
+            <tr/> 
+        </c:forEach>
+    </table>
+</body>
 </html>

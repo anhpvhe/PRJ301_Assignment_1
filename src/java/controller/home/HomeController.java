@@ -4,6 +4,7 @@
  */
 package controller.home;
 
+import controller.authentication.AuthorizationController;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +24,13 @@ public class HomeController extends HttpServlet{
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/view/home.jsp").forward(request, response);
+        AuthorizationController check = new AuthorizationController();
+        if(check.isAuthenticated(request)){
+            request.getRequestDispatcher("/view/home.jsp").forward(request, response);
+        }else{
+            request.getRequestDispatcher("/view/authentication/unauthenticated.jsp").forward(request, response);
+        }
+        
     }
     
 }

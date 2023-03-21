@@ -12,7 +12,7 @@ import model.Account;
  * @author ACER
  */
 public class Permission {
-    private String id;
+    private int id;
     private String name;
     private ArrayList<Account> accounts = new ArrayList<>();
     private ArrayList<Action> actions = new ArrayList<>();
@@ -20,11 +20,11 @@ public class Permission {
     public Permission() {
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

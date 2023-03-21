@@ -16,45 +16,28 @@ import java.sql.Date;
 import java.util.ArrayList;
 import model.Session;
 import model.TimeSlot;
+import model.permission.Permission;
 import util.DateTimeHelper;
 
 /**
  *
  * @author ACER
  */
-public class TimeTableLecturerController extends HttpServlet {
-
+public class TimetableController extends HttpServlet{
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AuthorizationController check = new AuthorizationController();
-        ArrayList<String> permit_list = new ArrayList<>();
-        permit_list.add("1");
-        permit_list.add("2");
-        permit_list.add("3");
+        ArrayList<Permission> permit_list = check.permissionList(request);
         if (!check.isAuthenticated(request)) {
             request.setAttribute("invalidSession", true);
             request.getRequestDispatcher("/view/authentication/unauthenticated.jsp").forward(request, response);
         } else {
-            if (check.isAuthorized(request, permit_list)) {
-                String lid = request.getParameter("lid");
-//                Date from = Date.valueOf(request.getParameter("from"));
-//                Date to = Date.valueOf(request.getParameter("to"));
-                String currentDay = DateTimeHelper.getCurrentDate();
-                Date from = Date.valueOf(DateTimeHelper.getFirstDayOfWeek(currentDay));
-                Date to = Date.valueOf(DateTimeHelper.getLastDayOfWeek(currentDay));
-                ArrayList<Date> dates = DateTimeHelper.getListDates(from, to);
-                TimeSlotDBContext dbSlot = new TimeSlotDBContext();
-                ArrayList<TimeSlot> slots = dbSlot.all();
-                LecturerDBContext lecDb = new LecturerDBContext();
-                ArrayList<Session> sessions = lecDb.getSessions(lid);
-
-                request.setAttribute("slots", slots);
-                request.setAttribute("dates", dates);
-                request.setAttribute("sessions", sessions);
-                request.getRequestDispatcher("../view/att/lecturer/lec_timetable.jsp").forward(request, response);
-            } else {
-                request.getRequestDispatcher("/view/authentication/unauthorized.jsp").forward(request, response);
+            for(Permission permit:permit_list){
+                if(permit.getId()==1||permit.getId()==2){
+                    
+                }
             }
+            
         }
 
     }
@@ -70,5 +53,4 @@ public class TimeTableLecturerController extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
 }

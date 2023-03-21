@@ -9,9 +9,14 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Student Timetable</title>
+        <form action="logout" method="POST">
+            <button type="submit">Log Out</button>
+        </form>
     </head>
     <body>
+
+        <h2>Timetable for ${sessionScope.account.person_id} </h2> 
         <table border="1px"> 
             <tr>
                 <td></td>
