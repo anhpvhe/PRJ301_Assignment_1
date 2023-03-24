@@ -61,7 +61,7 @@ public class SessionDBContext extends DBContext<Session>{
                 lecturer.setId((rs.getString("lid")));
                 session.setLecturer(lecturer);
                 TimeSlot timeSlot = new TimeSlot();
-                timeSlot.setId(rs.getInt("slotId"));
+                timeSlot.setId(rs.getInt("tid"));
                 timeSlot.setDescription(rs.getString("description"));
                 session.setSlot(timeSlot);
                 Room room = new Room();
@@ -78,6 +78,7 @@ public class SessionDBContext extends DBContext<Session>{
                 session.setGroup(group);
             }
         } catch (SQLException ex) {
+            System.out.println("loi lay ra session");
             Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
@@ -262,6 +263,10 @@ public class SessionDBContext extends DBContext<Session>{
             }
         }
         return sessions;
+    }
+    public static void main(String[] args) {
+        Session s = new SessionDBContext().get(38);
+        System.out.println(s);
     }
     
 }

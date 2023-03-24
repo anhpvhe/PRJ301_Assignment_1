@@ -16,14 +16,14 @@
         <h1>Hello World!</h1>
 
         <div style="overflow-x:auto;">
-            <table>
+            <table border="1px">
                 <c:forEach items="${requestScope.students}" var="student" varStatus="loop1">
                     <tr>
                         <td>No</td>
                         <td>Student Code</td>
                         <td>Student Name</td>
                         <td>Absent</td>
-                        <c:forEach items="${requestScope.students.atts}" var="att" varStatus="loop2">
+                        <c:forEach items="${requestScope.student.atts}" var="att" varStatus="loop2">
                             <td> S${loop2.index + 1} - R${att.session.room.name}<br/>
                                 Lecturer: ${att.session.lecturer.name}<br/>                                    
                                 <fmt:formatDate value="${att.session.date}" pattern="dd/MM"></fmt:formatDate>
@@ -36,12 +36,15 @@
                             <td>${student.id}</td>
                             <td>${student.name}</td>
                             <td>
-                                <c:forEach items="${requestScope.percentage}" var="per_absent">
-                                    ${per_absent.value}%
-                                </c:forEach>
+
+                                ${requestScope.percentage.value}%
+
                             </td>
-                            <c:forEach items="${requestScope.students.atts}" var="att" varStatus="loop2">
-                                <c:forEach items="${requestScope.sessions}" var="session" varStatus="loop3">
+                            
+                            
+                            <c:forEach items="${requestScope.sessions}" var="session" varStatus="loop3">
+                                <c:forEach items="${requestScope.student.atts}" var="att" varStatus="loop2">
+
                                     <td>
                                         <c:if test="${att.session.id eq session.id && att.student.id eq student.id}">
                                             <c:if test="${att.status}">
@@ -57,6 +60,8 @@
                                     </td>
                                 </c:forEach>
                             </c:forEach>
+                                    
+                                    
                         </c:forEach>
                     </tr>
                 </c:forEach>

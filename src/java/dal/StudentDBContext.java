@@ -232,7 +232,7 @@ public class StudentDBContext extends DBContext<Student> {
         PreparedStatement stm = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT s.sid,s.sname ,ses.sessionid,ses.date,ses.status as [session_status],l.lid,l.lname,g.gid,g.gname,c.cid,c.cname,r.rid,r.rname,t.tid,t.description,ISNULL(a.status,0) as [attendance_status], ISNULL(a.description,'') as [att_description],a.attid\n"
+            String sql = "SELECT s.sid,s.sname ,ses.sessionid,ses.date,ses.status as [session_status],l.lid,l.lname,g.gid,g.gname,t.tid,c.cid,c.cname,r.rid,r.rname,t.tid,t.description,ISNULL(a.status,0) as [attendance_status], ISNULL(a.description,'') as [att_description],a.attid\n"
                     + "                    FROM Student s INNER JOIN Student_Group sg ON sg.sid = s.sid\n"
                     + "                                 INNER JOIN [Group] g ON g.gid = sg.gid\n"
                     + "                                 INNER JOIN [Session] ses ON ses.gid = g.gid\n"
@@ -262,10 +262,10 @@ public class StudentDBContext extends DBContext<Student> {
                 lecturer.setId((rs.getString("lid")));
                 lecturer.setName((rs.getString("lname")));
                 session.setLecturer(lecturer);
-                TimeSlot timeSlot = new TimeSlot();
-                timeSlot.setId(rs.getInt("slotId"));
-                timeSlot.setDescription(rs.getString("description"));
-                session.setSlot(timeSlot);
+                TimeSlot slot = new TimeSlot();
+                slot.setId(rs.getInt("tid"));
+                slot.setDescription(rs.getString("description"));
+                session.setSlot(slot);
                 Room room = new Room();
                 room.setId(rs.getInt("rid"));
                 room.setName(rs.getString("rname"));
@@ -282,6 +282,7 @@ public class StudentDBContext extends DBContext<Student> {
                 atts.add(a);
             }
         } catch (SQLException ex) {
+            System.out.println("loi lsy ra attend");
             Logger.getLogger(AttendanceDBContext.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
@@ -618,6 +619,14 @@ public class StudentDBContext extends DBContext<Student> {
             }
         }
         return students;
+    }
+    public static void main(String[] args) {
+        ArrayList<Attendance> getAttsBySID = new StudentDBContext().getAttsBySID("he170001", 2);
+        for (Attendance attendance : getAttsBySID) {
+            System.out.println(attendance);
+        }
+        int num = new  StudentDBContext().countSessionAbsent("he170001",1);
+        System.out.println(num);
     }
 
 }

@@ -136,7 +136,7 @@ public class AttendanceDBContext extends DBContext<Attendance> {
                 lecturer.setId((rs.getString("lid")));
                 session.setLecturer(lecturer);
                 TimeSlot timeSlot = new TimeSlot();
-                timeSlot.setId(rs.getInt("slotId"));
+                timeSlot.setId(rs.getInt("tid"));
                 timeSlot.setDescription(rs.getString("description"));
                 session.setSlot(timeSlot);
                 Room room = new Room();
@@ -200,6 +200,12 @@ public class AttendanceDBContext extends DBContext<Attendance> {
     @Override
     public ArrayList<Attendance> all() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    public static void main(String[] args) {
+        ArrayList<Attendance> getAttsBySessionID = new AttendanceDBContext().getAttsBySessionID(38);
+        for (Attendance attendance : getAttsBySessionID) {
+            System.out.println(attendance);
+        }
     }
 
 }

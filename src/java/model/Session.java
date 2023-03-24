@@ -77,6 +77,11 @@ public class Session {
     public void setStatus(boolean status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Session{" + "id=" + id + ", group=" + group + ", lecturer=" + lecturer + ", room=" + room + ", slot=" + slot + ", date=" + date + ", status=" + status + '}';
+    }
     
     
     

@@ -32,6 +32,7 @@
                     <td>${group.course.name}</td>
                     <td>
                         <a href="viewAttendance?gid=${group.id}">View attendance report</a>
+                        <input type="hidden" name="gid" value="${group.id}"/>
                         <input type="hidden" name="sid" value="${sessionScope.account.person_id}">
                     </td>
                 </tr>

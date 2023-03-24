@@ -17,7 +17,7 @@
     <body>
         <h1>Hello World!</h1>
 
-        <table>
+        <table border="1px">
             <tr>
                 <td>No</td>
                 <td>Date</td>
@@ -34,7 +34,7 @@
                     <td>
                         <fmt:formatDate value="${att.session.date}" pattern="EEEE dd/MM/yyyy"/>
                     </td>
-                    <td>${att.session.timeslot.id} - ${att.session.timeslot.description} </td>
+                    <td>${att.session.slot.id} - ${att.session.slot.description} </td>
                     <td>${att.session.room.name}</td>
                     <td>${att.session.lecturer.name}</td>
                     <td>${att.session.group.name}</td>
@@ -42,14 +42,15 @@
                 <c:if test="${att.status}"> Present
                     Present
                 </c:if>
-                <c:if test="${!att.status && att.session.status != 1}">
+                <c:if test="${!att.status and 
+                              !att.session.status}">
                     <p>Future</p>
                 </c:if>
-                <c:if test="${!att.status && att.session.status == 1}">
+                <c:if test="${!att.status and att.session.status }">
                     <p>Absent</p>
                 </c:if>
                     </td>
-                <td>${att.comment}</td>
+                <td>${att.description}</td>
                 </tr>
             </c:forEach>
             <tr>

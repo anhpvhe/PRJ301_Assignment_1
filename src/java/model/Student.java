@@ -78,6 +78,11 @@ public class Student {
     public void setAtts(ArrayList<Attendance> atts) {
         this.atts = atts;
     }
+
+    @Override
+    public String toString() {
+        return "Student{" + "id=" + id + ", name=" + name + ", gender=" + gender + ", dob=" + dob + ", dept=" + dept + ", groups=" + groups + ", atts=" + atts + '}';
+    }
     
     
     

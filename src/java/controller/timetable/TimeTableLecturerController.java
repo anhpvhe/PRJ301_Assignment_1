@@ -37,11 +37,12 @@ public class TimeTableLecturerController extends HttpServlet {
         } else {
             if (check.isAuthorized(request, permit_list)) {
                 String lid = request.getParameter("lid");
-//                Date from = Date.valueOf(request.getParameter("from"));
-//                Date to = Date.valueOf(request.getParameter("to"));
+//                
                 String currentDay = DateTimeHelper.getCurrentDate();
                 Date from = Date.valueOf(DateTimeHelper.getFirstDayOfWeek(currentDay));
                 Date to = Date.valueOf(DateTimeHelper.getLastDayOfWeek(currentDay));
+//                Date from = Date.valueOf(request.getParameter("from"));
+//                Date to = Date.valueOf(request.getParameter("to"));
                 ArrayList<Date> dates = DateTimeHelper.getListDates(from, to);
                 TimeSlotDBContext dbSlot = new TimeSlotDBContext();
                 ArrayList<TimeSlot> slots = dbSlot.all();

@@ -23,7 +23,8 @@ import util.DateTimeHelper;
  *
  * @author ACER
  */
-public class StudentAttendanceController extends HttpServlet{
+public class StudentAttendanceController extends HttpServlet {
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AuthorizationController check = new AuthorizationController();
@@ -35,15 +36,22 @@ public class StudentAttendanceController extends HttpServlet{
             request.getRequestDispatcher("/view/authentication/unauthenticated.jsp").forward(request, response);
         } else {
             if (check.isAuthorized(request, permit_list)) {
-                int gid = Integer.parseInt(request.getParameter("gid"));
-                Account acc = (Account)request.getSession().getAttribute("account");
+                int gid;
+                if (request.getParameter("gid") == null) {
+                     gid = 2;
+                } else {
+                     gid = Integer.parseInt(request.getParameter("gid"));
+                    System.out.println("gid is " + gid);
+                }
+
+                Account acc = (Account) request.getSession().getAttribute("account");
                 String student_id = acc.getPerson_id();
                 StudentDBContext stuDB = new StudentDBContext();
                 ArrayList<Attendance> atts = stuDB.getAttsBySID(student_id, gid);
                 request.setAttribute("atts", atts);
-                int totalSes = stuDB.countSessionFromGroup(gid); //total number of sessions
-                int presentSes = stuDB.countSessionAttended(student_id, gid); //attended sessions
-                int absentSes = stuDB.countSessionAbsent(student_id, gid); //absent sessions
+                int totalSes = new StudentDBContext().countSessionFromGroup(gid); //total number of sessions
+                int presentSes = new StudentDBContext().countSessionAttended(student_id, gid); //attended sessions
+                int absentSes = new StudentDBContext().countSessionAbsent(student_id, gid); //absent sessions
                 double percentage = ((double) absentSes / presentSes) * 100;
                 request.setAttribute("percentage", percentage); //double type
                 request.setAttribute("absentSes", absentSes);
