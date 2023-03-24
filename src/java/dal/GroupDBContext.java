@@ -90,17 +90,17 @@ public class GroupDBContext extends DBContext<Group> {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    public ArrayList<Group> getGroupsFromStudent(String sid) {
+    public ArrayList<Group> getGroupsFromStudent(String sid) { //get list of groups by student id
         ArrayList<Group> groups = new ArrayList<>();
         PreparedStatement stm = null;
         ResultSet rs = null;
         try {
-            String sql = "select g.gid, g.gname, g.cid, c.cname, s.sid, s.sname  \n" +
-"from [Group] g \n" +
-"INNER JOIN Student_Group sg on sg.gid = g.gid\n" +
-"INNER JOIN Student s on s.sid=sg.sid\n" +
-"INNER JOIN Course c on g.cid = c.cid \n" +
-"where s.sid = ?";
+            String sql = "select g.gid, g.gname, g.cid, c.cname, s.sid, s.sname  \n"
+                    + "from [Group] g \n"
+                    + "INNER JOIN Student_Group sg on sg.gid = g.gid\n"
+                    + "INNER JOIN Student s on s.sid=sg.sid\n"
+                    + "INNER JOIN Course c on g.cid = c.cid \n"
+                    + "where s.sid = ?";
             stm = connection.prepareStatement(sql);
             stm.setString(1, sid);
             rs = stm.executeQuery();
@@ -127,18 +127,16 @@ public class GroupDBContext extends DBContext<Group> {
         }
         return groups;
     }
-    
-    public ArrayList<Group> getGroupsFromLecturer(String lid) {
+
+    public ArrayList<Group> getGroupsFromLecturer(String lid) { //get list of groups by lecturer id
         ArrayList<Group> groups = new ArrayList<>();
         PreparedStatement stm = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT ses.sessionid,ses.date,ses.status,g.gid,g.gname,c.cid,c.cname,r.rid,r.rname,t.tid,t.description\n" +
-"FROM [Session] ses INNER JOIN [Group] g ON ses.gid = g.gid	\n" +
-"INNER JOIN Course c ON c.cid = g.cid		\n" +
-"INNER JOIN Room r ON r.rid = ses.rid	\n" +
-"INNER JOIN TimeSlot t ON t.tid = ses.tid\n" +
-"         WHERE ses.lid = ?";
+            String sql = "SELECT DISTINCT  g.gid,g.gname,c.cid,c.cname\n"
+                    + "FROM [Session] ses INNER JOIN [Group] g ON ses.gid = g.gid	\n"
+                    + "INNER JOIN Course c ON c.cid = g.cid		\n"
+                    + "         WHERE ses.lid = ?";
             stm = connection.prepareStatement(sql);
             stm.setString(1, lid);
             rs = stm.executeQuery();
@@ -165,5 +163,5 @@ public class GroupDBContext extends DBContext<Group> {
         }
         return groups;
     }
-    
+
 }

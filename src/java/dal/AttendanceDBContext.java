@@ -11,13 +11,19 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Attendance;
+import model.Course;
+import model.Group;
+import model.Lecturer;
+import model.Room;
+import model.Session;
 import model.Student;
+import model.TimeSlot;
 
 /**
  *
  * @author ACER
  */
-public class AttendanceDBContext extends DBContext<Attendance>{
+public class AttendanceDBContext extends DBContext<Attendance> {
 
     public void updateAtts(ArrayList<Attendance> atts, int sessionid) {
         ArrayList<PreparedStatement> stms = new ArrayList<>();
@@ -51,7 +57,7 @@ public class AttendanceDBContext extends DBContext<Attendance>{
                     stm_insert_att.setString(4, att.getDescription());
                     stm_insert_att.executeUpdate();
                     stms.add(stm_insert_att);
-                    
+
                 } else //UPDATE
                 {
                     String sql_update_att = "UPDATE Attendance SET status = ?,description = ? WHERE attid = ?";
@@ -95,32 +101,57 @@ public class AttendanceDBContext extends DBContext<Attendance>{
 
     }
 
-    public ArrayList<Attendance> getAttsBySessionID(int sessionid) {
+    public ArrayList<Attendance> getAttsBySessionID(int sessionid) { //get attendance and session info by session id
         ArrayList<Attendance> atts = new ArrayList<>();
         PreparedStatement stm = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT \n"
-                    + "	s.sid,s.sname\n"
-                    + "	,ISNULL(a.status,0) as [status], ISNULL(a.description,'') as [description],a.attid\n"
+            String sql = "SELECT s.sid,s.sname ,ses.sessionid,ses.date,ses.status as [session_status],l.lid,l.lname,g.gid,g.gname,c.cid,c.cname,r.rid,r.rname,t.tid,t.description,ISNULL(a.status,0) as [attendance_status], ISNULL(a.description,'') as [att_description],a.attid\n"
                     + "FROM Student s INNER JOIN Student_Group sg ON sg.sid = s.sid\n"
-                    + "						INNER JOIN [Group] g ON g.gid = sg.gid\n"
-                    + "						INNER JOIN [Session] ses ON ses.gid = g.gid\n"
-                    + "						LEFT JOIN [Attendance] a \n"
-                    + "						ON a.sid = s.sid AND a.sessionid = ses.sessionid\n"
-                    + "						WHERE ses.sessionid = ?";
+                    + "               INNER JOIN [Group] g ON g.gid = sg.gid\n"
+                    + "               INNER JOIN [Session] ses ON ses.gid = g.gid\n"
+                    + "               LEFT JOIN [Attendance] a ON a.sid = s.sid AND a.sessionid = ses.sessionid\n"
+                    + "			   INNER JOIN Course c ON c.cid = g.cid		\n"
+                    + "			   INNER JOIN Room r ON r.rid = ses.rid	\n"
+                    + "               INNER JOIN TimeSlot t ON t.tid = ses.tid\n"
+                    + "			   INNER JOIN Lecturer l ON l.lid=ses.lid\n"
+                    + "WHERE ses.sessionid = ?";
             stm = connection.prepareStatement(sql);
             stm.setInt(1, sessionid);
             rs = stm.executeQuery();
             while (rs.next()) {
                 Attendance a = new Attendance();
                 a.setId(rs.getInt("attid"));
-                a.setStatus(rs.getBoolean("status"));
-                a.setDescription(rs.getString("description"));
+                a.setStatus(rs.getBoolean("attendance_status"));
+                a.setDescription(rs.getString("att_description"));
                 Student s = new Student();
                 s.setId(rs.getString("sid"));
                 s.setName(rs.getString("sname"));
                 a.setStudent(s);
+                Session session = new Session();
+                session.setId(rs.getInt("sessionid"));
+                session.setDate(rs.getDate("date"));
+                session.setStatus(rs.getBoolean("session_status"));
+                Lecturer lecturer = new Lecturer();
+                lecturer.setId((rs.getString("lid")));
+                session.setLecturer(lecturer);
+                TimeSlot timeSlot = new TimeSlot();
+                timeSlot.setId(rs.getInt("slotId"));
+                timeSlot.setDescription(rs.getString("description"));
+                session.setSlot(timeSlot);
+                Room room = new Room();
+                room.setId(rs.getInt("rid"));
+                room.setName(rs.getString("rname"));
+                session.setRoom(room);
+                Group group = new Group();
+                Course course = new Course();
+                course.setId(rs.getInt("cid"));
+                course.setName(rs.getString("cname"));
+                group.setCourse(course);
+                group.setId(rs.getInt("gid"));
+                group.setName(rs.getString("gname"));
+                session.setGroup(group);
+                a.setSession(session);
                 atts.add(a);
             }
         } catch (SQLException ex) {
@@ -145,7 +176,7 @@ public class AttendanceDBContext extends DBContext<Attendance>{
         }
         return atts;
     }
-    
+
     @Override
     public void insert(Attendance model) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -170,5 +201,5 @@ public class AttendanceDBContext extends DBContext<Attendance>{
     public ArrayList<Attendance> all() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
+
 }

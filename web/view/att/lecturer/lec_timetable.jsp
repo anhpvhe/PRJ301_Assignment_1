@@ -13,7 +13,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form action="logout" method="POST">
+        <form action="../logout" method="POST">
             <button type="submit">Log Out</button>
         </form>
         <h2>Timetable for ${sessionScope.account.person_id} </h2> 

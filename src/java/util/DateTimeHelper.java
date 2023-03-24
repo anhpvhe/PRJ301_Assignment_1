@@ -75,6 +75,28 @@ public class DateTimeHelper {
         return lastDayOfWeek.format(formatter);
     }
     
+    public static String getDate7DaysAgo(String inputDate) {
+        // Convert input date string to LocalDate object
+        LocalDate date = LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        
+        // Calculate the date 7 days ago
+        LocalDate date7DaysAgo = date.minusDays(7);
+        
+        // Format the date as a string and return it
+        return date7DaysAgo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+    
+    public static String getDate7DaysAhead(String inputDate) {
+        // Convert input date string to LocalDate object
+        LocalDate date = LocalDate.parse(inputDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        
+        // Calculate the date 7 days ahead
+        LocalDate date7DaysAhead = date.plusDays(7);
+        
+        // Format the date as a string and return it
+        return date7DaysAhead.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+    
 //    public static String getLastDayOfWeek(String dateString) { //input Monday here
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 //        LocalDate date = LocalDate.parse(dateString, formatter);

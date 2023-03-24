@@ -39,7 +39,7 @@ public class SessionDBContext extends DBContext<Session>{
     }
 
     @Override
-    public Session get(int id) {
+    public Session get(int id) { //get a session from session id
         Session session = new Session();
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -96,7 +96,7 @@ public class SessionDBContext extends DBContext<Session>{
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
  
-    public ArrayList<Session> getSessionsFromGroup(int gid) {
+    public ArrayList<Session> getSessionsFromGroup(int gid) { //get list of sessions from group id (subject)
         ArrayList<Session> sessions = new ArrayList<>();
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -150,7 +150,7 @@ public class SessionDBContext extends DBContext<Session>{
         return sessions;
     }
     
-    public int countSessionFromGroup(int gid) {
+    public int countSessionFromGroup(int gid) { // count number of sessinons by gourp id (total number of sessinos)
         int count = 0;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -180,7 +180,37 @@ public class SessionDBContext extends DBContext<Session>{
         return count;
     }
     
-    public ArrayList<Session> getSessionsByCourse(int cid) {
+    public int countSessionExisted(int gid) { // count number of sessinons that have existed by gourp id (total number of existed sessinos)
+        int count = 0;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            String sql = "select count(ses.sessionid) as countSessions, ses.gid, g.cid\n" +
+"	from Session ses \n" +
+"	join [Group] g on ses.gid = g.gid\n" +
+"	where g.gid = ? and ses.status = 1\n" +
+"	group by ses.gid, g.cid ";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, gid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("countSessions");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+                stm.close();
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return count;
+    }
+    
+    public ArrayList<Session> getSessionsByCourse(int cid) { //get sessions by course id
         ArrayList<Session> sessions = new ArrayList<>();
         PreparedStatement stm = null;
         ResultSet rs = null;

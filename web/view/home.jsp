@@ -9,26 +9,44 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>FPT Academic Portal</title>
     </head>
+    <style>
+        .body{
+            font-family: Arial, sans-serif;
+            background-image: url("img/fpt-uni.jpg");
+            background-position-y: center;
+            background-size: cover;
+        }
+
+        .logoutform{
+            display: flex;
+            justify-content: right;
+            align-items: center;
+        }
+    </style>
     <body>
         <h1>Hello ${sessionScope.account.person_id} </h1>
         <!--        <form action='student/timetable' method="POST">
                     <input type="hidden" name="sid" value="${sessionScope.account.person_id}">
                     <input type='submit' value='View Timetable'/>
                 </form>-->
+        <div class="logoutform">
         <form action="logout" method="POST">
             <button type="submit">Log Out</button>
         </form>
+        </div>
         <c:forEach var="permission" items="${sessionScope.permissions}">
             <c:choose>
                 <c:when test="${permission.id == 3}">
                     <input type="hidden" name="lid" value="${sessionScope.account.person_id}">
-                    <a href="lecturer/timetable?lid=${sessionScope.account.person_id}"><button>View Lecturer Timetable</button></a>
+                    <a href="lecturer/timetable?lid=${sessionScope.account.person_id}"><button>View Lecturer Timetable</button></a></br>
+                    <a href="lecturer/group?lid=${sessionScope.account.person_id}"><button>View Groups</button></a>
                 </c:when>
                 <c:when test="${permission.id == 4}">
                     <input type="hidden" name="sid" value="${sessionScope.account.person_id}">
-                    <a href="student/timetable?sid=${sessionScope.account.person_id}"><button>View Student Timetable</button></a>
+                    <a href="student/timetable?sid=${sessionScope.account.person_id}"><button>View Student Timetable</button></a></br>
+                    <a href="student/group?sid=${sessionScope.account.person_id}"><button>View Groups</button></a>
                 </c:when>
                 <c:when test="${permission.id == 1}">
                     <input type="hidden" name="sid" value="${sessionScope.account.person_id}">

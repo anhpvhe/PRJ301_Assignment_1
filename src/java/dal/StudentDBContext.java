@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Attendance;
 import model.Course;
 import model.Department;
 import model.Group;
@@ -26,7 +27,111 @@ import model.TimeSlot;
  */
 public class StudentDBContext extends DBContext<Student> {
 
-    public int countStudentInGroup(int gid) {
+    public int countSessionFromGroup(int gid) { // count number of sessinons by gourp id (total number of sessinos)
+        int count = 0;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+                String sql = "select count(ses.sessionid) as countSessions, ses.gid, g.cid\n" +
+    "	from Session ses \n" +
+    "	join [Group] g on ses.gid = g.gid\n" +
+    "	where g.gid = ?\n" +
+    "	group by ses.gid, g.cid ";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, gid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("countSessions");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+                stm.close();
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return count;
+    }
+    
+    public int countSessionAttended(String sid, int gid) { // count number of sessinons that have attended, search by student id and group id, tag status true
+        int count = 0;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT count(ses.sessionid) as countSessions, ses.gid, g.cid\n"
+                    + "                    FROM Student s INNER JOIN Student_Group sg ON sg.sid = s.sid\n"
+                    + "                                 INNER JOIN [Group] g ON g.gid = sg.gid\n"
+                    + "                                 INNER JOIN [Session] ses ON ses.gid = g.gid\n"
+                    + "                                  LEFT JOIN [Attendance] a ON a.sid = s.sid AND a.sessionid = ses.sessionid\n"
+                    + "                  		   INNER JOIN Course c ON c.cid = g.cid		\n"
+                    + "                  			   INNER JOIN Room r ON r.rid = ses.rid\n"
+                    + "                                  INNER JOIN TimeSlot t ON t.tid = ses.tid\n"
+                    + "                  		   INNER JOIN Lecturer l ON l.lid=ses.lid\n"
+                    + "                   WHERE s.sid= ? and g.gid = ? and ses.status = 1 and a.status = 1\n"
+                    + "				   group by ses.gid, g.cid";
+            stm = connection.prepareStatement(sql);
+            stm.setString(1, sid);
+            stm.setInt(2, gid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("countSessions");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+                stm.close();
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return count;
+    }
+    
+    public int countSessionAbsent(String sid, int gid) { // count number of sessinons that have been absent, search by student id and group id, tag status false
+        int count = 0;
+        PreparedStatement stm = null; //thi nghiem
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT count(ses.sessionid) as countSessions, ses.gid, g.cid\n"
+                    + "                    FROM Student s INNER JOIN Student_Group sg ON sg.sid = s.sid\n"
+                    + "                                 INNER JOIN [Group] g ON g.gid = sg.gid\n"
+                    + "                                 INNER JOIN [Session] ses ON ses.gid = g.gid\n"
+                    + "                                  LEFT JOIN [Attendance] a ON a.sid = s.sid AND a.sessionid = ses.sessionid\n"
+                    + "                  		   INNER JOIN Course c ON c.cid = g.cid		\n"
+                    + "                  			   INNER JOIN Room r ON r.rid = ses.rid\n"
+                    + "                                  INNER JOIN TimeSlot t ON t.tid = ses.tid\n"
+                    + "                  		   INNER JOIN Lecturer l ON l.lid=ses.lid\n"
+                    + "                   WHERE s.sid= ? and g.gid = ? and ses.status = 1 and a.status = 0\n"
+                    + "				   group by ses.gid, g.cid";
+            stm = connection.prepareStatement(sql);
+            stm.setString(1, sid);
+            stm.setInt(2, gid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("countSessions");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+                stm.close();
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return count;
+    }
+
+    public int countStudentInGroup(int gid) { //count number of students in group
         int count = 0;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -56,7 +161,7 @@ public class StudentDBContext extends DBContext<Student> {
         return count;
     }
 
-    public ArrayList<Student> getStudentsFromGroup(int gid) {
+    public ArrayList<Student> getStudentsFromGroup(int gid) { //get lists of students from group id
         ArrayList<Student> students = new ArrayList<>();
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -88,7 +193,7 @@ public class StudentDBContext extends DBContext<Student> {
         return students;
     }
 
-    public ArrayList<Student> getStudentsFromSession(int sessionid) {
+    public ArrayList<Student> getStudentsFromSession(int sessionid) { //get lsits of students from session id
         ArrayList<Student> students = new ArrayList<>();
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -122,7 +227,84 @@ public class StudentDBContext extends DBContext<Student> {
         return students;
     }
 
-    public Student getTimeTable(String sid, Date from, Date to) {
+    public ArrayList<Attendance> getAttsBySID(String sid, int gid) { //get attendance lists of a student on a subject by his student id and group id 
+        ArrayList<Attendance> atts = new ArrayList<>();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT s.sid,s.sname ,ses.sessionid,ses.date,ses.status as [session_status],l.lid,l.lname,g.gid,g.gname,c.cid,c.cname,r.rid,r.rname,t.tid,t.description,ISNULL(a.status,0) as [attendance_status], ISNULL(a.description,'') as [att_description],a.attid\n"
+                    + "                    FROM Student s INNER JOIN Student_Group sg ON sg.sid = s.sid\n"
+                    + "                                 INNER JOIN [Group] g ON g.gid = sg.gid\n"
+                    + "                                 INNER JOIN [Session] ses ON ses.gid = g.gid\n"
+                    + "                                  LEFT JOIN [Attendance] a ON a.sid = s.sid AND a.sessionid = ses.sessionid\n"
+                    + "                  		   INNER JOIN Course c ON c.cid = g.cid		\n"
+                    + "                  			   INNER JOIN Room r ON r.rid = ses.rid\n"
+                    + "                                  INNER JOIN TimeSlot t ON t.tid = ses.tid\n"
+                    + "                  		   INNER JOIN Lecturer l ON l.lid=ses.lid\n"
+                    + "                   WHERE s.sid= ? and g.gid = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setString(1, sid);
+            stm.setInt(2, gid);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                Attendance a = new Attendance();
+                a.setStatus(rs.getBoolean("attendance_status"));
+                a.setDescription(rs.getString("att_description"));
+                Student s = new Student();
+                s.setId(rs.getString("sid"));
+                s.setName(rs.getString("sname"));
+                a.setStudent(s);
+                Session session = new Session();
+                session.setId(rs.getInt("sessionid"));
+                session.setDate(rs.getDate("date"));
+                session.setStatus(rs.getBoolean("session_status"));
+                Lecturer lecturer = new Lecturer();
+                lecturer.setId((rs.getString("lid")));
+                lecturer.setName((rs.getString("lname")));
+                session.setLecturer(lecturer);
+                TimeSlot timeSlot = new TimeSlot();
+                timeSlot.setId(rs.getInt("slotId"));
+                timeSlot.setDescription(rs.getString("description"));
+                session.setSlot(timeSlot);
+                Room room = new Room();
+                room.setId(rs.getInt("rid"));
+                room.setName(rs.getString("rname"));
+                session.setRoom(room);
+                Group group = new Group();
+                Course course = new Course();
+                course.setId(rs.getInt("cid"));
+                course.setName(rs.getString("cname"));
+                group.setCourse(course);
+                group.setId(rs.getInt("gid"));
+                group.setName(rs.getString("gname"));
+                session.setGroup(group);
+                a.setSession(session);
+                atts.add(a);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AttendanceDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(AttendanceDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                stm.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(AttendanceDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(AttendanceDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return atts;
+    }
+
+    public Student getTimeTable(String sid, Date from, Date to) { //get the timetable in time range of ? and ? given the student id
         Student student = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -199,7 +381,7 @@ public class StudentDBContext extends DBContext<Student> {
         return student;
     }
 
-    public Student get(String sid) {
+    public Student get(String sid) { //get student from student id
         PreparedStatement stm = null;
         ResultSet rs = null;
         try {

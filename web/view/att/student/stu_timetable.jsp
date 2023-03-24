@@ -10,13 +10,33 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Student Timetable</title>
-        <form action="logout" method="POST">
+        
+    </head>
+    <style>
+        .body{
+            font-family: Arial, sans-serif;
+            background-image: url("img/fpt-uni.jpg");
+            background-position-y: center;
+            background-size: cover;
+        }
+
+        .logoutform{
+            display: flex;
+            justify-content: right;
+            align-items: center;
+        }
+        </style>
+    <body>
+        <div class="logoutform">
+        <form action="../logout" method="POST">
             <button type="submit">Log Out</button>
         </form>
-    </head>
-    <body>
+        </div>
 
         <h2>Timetable for ${sessionScope.account.person_id} </h2> 
+        <select name="dateTime">
+            <option value="time">${requestScope.currentDate}</option>
+        </select>
         <table border="1px"> 
             <tr>
                 <td></td>
@@ -37,8 +57,11 @@
                             ${g.name}(${g.course.name}) <br/>
                             ${ses.lecturer.name}- At ${ses.room.name} <br/>
                             <c:if test="${ses.status}">
-                                <img src="../img/Ok-icon.png" alt=""/>
+                                <p style="color:green">Present</p>
                             </c:if>
+                            <c:if test="${!ses.status}">
+                                <p style="color:red">Absent</p>
+                            </c:if>    
                         </c:if>
                     </c:forEach>
                 </c:forEach>

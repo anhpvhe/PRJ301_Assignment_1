@@ -23,7 +23,7 @@ import model.TimeSlot;
  */
 public class LecturerDBContext extends DBContext<Lecturer> {
 
-    public ArrayList<Session> getSessions(String lid) {
+    public ArrayList<Session> getSessions(String lid) { //all sessions of a lecturer
         String sql = "SELECT ses.sessionid,ses.date,ses.status,g.gid,g.gname,c.cid,c.cname,r.rid,r.rname,t.tid,t.description \n"
                 + "FROM [Session] ses INNER JOIN [Group] g ON ses.gid = g.gid\n"
                 + "					INNER JOIN Course c ON c.cid = g.cid\n"

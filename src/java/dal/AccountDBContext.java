@@ -26,21 +26,23 @@ public class AccountDBContext extends DBContext<Account> {
 "INNER JOIN Permission per ON per.per_id = accper.per_id		\n" +
 "INNER JOIN Per_Action peract ON per.per_id = peract.per_id\n" +
 "INNER JOIN [Action] act ON act.action_id = peract.action_id\n" +
-"         WHERE acc.username =  ? AND [password] = ?";
+"         WHERE acc.username =  ? AND [password] = ?"; 
+// `1 acc se luon co it nhat 1 permission
         PreparedStatement stm = null;
         ResultSet rs = null;
         Account acc = null;
+        Permission per = null;
         try {
             stm = connection.prepareStatement(sql);
             stm.setString(1, username);
             stm.setString(2, password);
             rs = stm.executeQuery();
             if (rs.next()) {
-                Permission per = new Permission();
-                Action act = new Action();
                 
+                Action act = new Action();             
                 if (acc == null) {
                     acc = new Account();
+                    per = new Permission();
                     acc.setUsername(rs.getString("username"));
                     acc.setPerson_id(rs.getString("person_id"));
                 }

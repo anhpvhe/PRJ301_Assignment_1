@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package controller.timetable;
+package controller.att.student;
 
 import controller.authentication.AuthorizationController;
 import dal.StudentDBContext;
@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
+import model.Account;
+import model.Attendance;
 import model.TimeSlot;
 import util.DateTimeHelper;
 
@@ -21,8 +23,7 @@ import util.DateTimeHelper;
  *
  * @author ACER
  */
-public class TimeTableStudentController extends HttpServlet {
-
+public class StudentAttendanceController extends HttpServlet{
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AuthorizationController check = new AuthorizationController();
@@ -34,24 +35,21 @@ public class TimeTableStudentController extends HttpServlet {
             request.getRequestDispatcher("/view/authentication/unauthenticated.jsp").forward(request, response);
         } else {
             if (check.isAuthorized(request, permit_list)) {
-                String sid = request.getParameter("sid");
-//                Date from = Date.valueOf(request.getParameter("from"));
-//                Date to = Date.valueOf(request.getParameter("to"));
-                String currentDay = DateTimeHelper.getCurrentDate();
-                Date from = Date.valueOf(DateTimeHelper.getFirstDayOfWeek(currentDay));
-                    Date to = Date.valueOf(DateTimeHelper.getLastDayOfWeek(currentDay));
-                TimeSlotDBContext timeDB = new TimeSlotDBContext();
-                ArrayList<TimeSlot> slots = timeDB.all();
-                request.setAttribute("slots", slots);
-                String currentDate = DateTimeHelper.getCurrentDate();
-                request.setAttribute("currentDate", currentDate);
-                ArrayList<Date> dates = DateTimeHelper.getListDates(from, to);
-                request.setAttribute("dates", dates);
-
+                int gid = Integer.parseInt(request.getParameter("gid"));
+                Account acc = (Account)request.getSession().getAttribute("account");
+                String student_id = acc.getPerson_id();
                 StudentDBContext stuDB = new StudentDBContext();
-                model.Student student = stuDB.getTimeTable(sid, from, to);
-                request.setAttribute("s", student);
-                request.getRequestDispatcher("../view/att/student/stu_timetable.jsp").forward(request, response);
+                ArrayList<Attendance> atts = stuDB.getAttsBySID(student_id, gid);
+                request.setAttribute("atts", atts);
+                int totalSes = stuDB.countSessionFromGroup(gid); //total number of sessions
+                int presentSes = stuDB.countSessionAttended(student_id, gid); //attended sessions
+                int absentSes = stuDB.countSessionAbsent(student_id, gid); //absent sessions
+                double percentage = ((double) absentSes / presentSes) * 100;
+                request.setAttribute("percentage", percentage); //double type
+                request.setAttribute("absentSes", absentSes);
+                request.setAttribute("presentSes", presentSes);
+                request.setAttribute("totalSes", totalSes);
+                request.getRequestDispatcher("../view/att/student/stu_attendance.jsp").forward(request, response);
             } else {
                 request.getRequestDispatcher("/view/authentication/unauthorized.jsp").forward(request, response);
             }
@@ -70,5 +68,4 @@ public class TimeTableStudentController extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
 }

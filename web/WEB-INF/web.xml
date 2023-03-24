@@ -18,7 +18,7 @@
     </servlet>
     <servlet>
         <servlet-name>TakeAttendanceController</servlet-name>
-        <servlet-class>controller.att.lecturer.TakeAttendanceController</servlet-class>
+        <servlet-class>controller.att.student.TakeAttendanceController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>HomePageController</servlet-name>
@@ -27,6 +27,14 @@
     <servlet>
         <servlet-name>TimeTableController</servlet-name>
         <servlet-class>controller.timetable.TimetableController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentGroupController</servlet-name>
+        <servlet-class>controller.group.GroupsForStudentController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentAttendanceController</servlet-name>
+        <servlet-class>controller.att.student.StudentAttendanceController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
@@ -55,6 +63,14 @@
     <servlet-mapping>
         <servlet-name>TimeTableController</servlet-name>
         <url-pattern>/timetable</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentGroupController</servlet-name>
+        <url-pattern>/student/group</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentAttendanceController</servlet-name>
+        <url-pattern>/student/viewAttendance</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
